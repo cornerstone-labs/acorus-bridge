@@ -1,95 +1,83 @@
-import Image from 'next/image'
-import styles from './page.module.css'
-
+import { Box, Stack, Typography } from '@mui/material';
+import { Metadata } from 'next';
+import Image from 'next/image';
+import { eth } from '@/assets/coin/index';
+import { arrow } from '@/assets/sign';
+export const metadata: Metadata = {
+  title: 'acorus bridge',
+};
 export default function Home() {
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
+    <Box>
+      <Stack mt={8} flexDirection={'row'} justifyContent={'center'}>
+        <Typography fontSize={'48px'} fontWeight={600}>
+          Acorus Bridge
+        </Typography>
+      </Stack>
+      <Stack mt={4} flexDirection={'row'} justifyContent={'center'}>
+        <Stack
+          borderRadius={3}
+          sx={{ opacity: 0.8 }}
+          flexDirection={'row'}
+          justifyContent={'center'}
+          py={2}
+          px={1.6}
+          bgcolor={'#fff'}
+          boxShadow={'rgba(0,0,0,0.04)'}
+        >
+          <Box display={'flex'} alignItems={'center'} pr={2}>
+            <Box
+              component={'input'}
+              color={'rgb(6,8,40)'}
+              fontSize={30}
+              placeholder="0.0"
             />
-          </a>
-        </div>
-      </div>
+            <Box component={'button'} bgcolor={'#fff'}>
+              <Typography fontSize={14}>MAX</Typography>
+            </Box>
+          </Box>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
+          <Box component={'button'} bgcolor={'#fff'}>
+            <Stack flexDirection={'row'} alignItems={'center'} gap={1}>
+              <Image src={eth} alt={'ETH'} width={26} height={26} />
+              <Typography>ETH</Typography>
+              <Image src={arrow} alt={'arrow'} />
+            </Stack>
+          </Box>
+        </Stack>
+      </Stack>
+      <Stack mt={4} flexDirection={'row'} justifyContent={'center'}>
+        <Stack
+          borderRadius={3}
+          sx={{ opacity: 0.8 }}
+          flexDirection={'row'}
+          justifyContent={'center'}
+          py={2}
+          px={1.6}
+          bgcolor={'#fff'}
+          boxShadow={'rgba(0,0,0,0.04)'}
         >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+          <Box display={'flex'} alignItems={'center'} pr={2}>
+            <Box
+              component={'input'}
+              color={'rgb(6,8,40)'}
+              fontSize={30}
+              placeholder="0.0"
+            />
+            <Box component={'button'} bgcolor={'#fff'}>
+              <Typography fontSize={14}>MAX</Typography>
+            </Box>
+          </Box>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+          <Box component={'button'} bgcolor={'#fff'}>
+            <Stack flexDirection={'row'} alignItems={'center'} gap={1}>
+              <Image src={eth} alt={'ETH'} width={26} height={26} />
+              <Typography>ETH</Typography>
+              <Image src={arrow} alt={'arrow'} />
+            </Stack>
+          </Box>
+        </Stack>
+      </Stack>
+    </Box>
+  );
 }
