@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import { eth } from '@/assets/coin/index';
 import { arrow } from '@/assets/sign';
+//only be allowed in server component
 export const metadata: Metadata = {
   title: 'acorus bridge',
 };

@@ -1,5 +1,12 @@
+'use client';
 import { Box, Stack, Typography } from '@mui/material';
-
+import dynamic from 'next/dynamic';
+const DynamicWallet = dynamic(
+  () => import('@thirdweb-dev/react').then((module) => module.ConnectWallet),
+  {
+    ssr: false,
+  }
+);
 export default function NavBar() {
   return (
     <Stack
@@ -12,9 +19,8 @@ export default function NavBar() {
       <Stack flexDirection={'row'}>
         <Typography color={'#555'}>Bridge</Typography>
       </Stack>
-      <Box bgcolor={'#D7D7D7'} padding={1} borderRadius={2}>
-        <Typography color={'#555'}>Connect Wallet</Typography>
-      </Box>
+
+      <DynamicWallet theme={'light'} modalTitleIconUrl={''} />
     </Stack>
   );
 }
