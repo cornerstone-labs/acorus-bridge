@@ -28,7 +28,7 @@ export default function RootLayout({
           ]}
           clientId="your-client-id"
         >
-          <Container>
+          <Container maxWidth="sm">
             <NavBar />
             {children}
           </Container>
