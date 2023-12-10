@@ -1,6 +1,6 @@
 'use client';
 import NavBar from '@/components/bar';
-import './globals.scss';
+import './globals.css';
 import { Inter } from 'next/font/google';
 import { Container } from '@mui/material';
 import {

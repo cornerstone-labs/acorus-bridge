@@ -11,7 +11,7 @@ export const DynamicWallet = dynamic(
         <Skeleton
           variant="rounded"
           animation="wave"
-          width={180}
+          width={144.41}
           height={'100%'}
           sx={{ bgcolor: 'grey.900' }}
         />

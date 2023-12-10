@@ -30,3 +30,12 @@ a {
     color-scheme: dark;
   }
 }
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+/* 火狐 */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
