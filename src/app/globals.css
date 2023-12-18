@@ -35,7 +35,8 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
 
-/* 火狐 */
-input[type='number'] {
-  -moz-appearance: textfield;
+.MuiButtonBase-root:disabled {
+  cursor: not-allowed;
+  pointer-events: auto;
+  background: rgb(203,203,203)
 }

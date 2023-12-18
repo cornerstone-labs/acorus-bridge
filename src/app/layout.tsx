@@ -8,6 +8,7 @@ import {
   metamaskWallet,
   walletConnect,
 } from '@thirdweb-dev/react';
+import { Gnosis } from '@thirdweb-dev/chains';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,12 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ThirdwebProvider
-          supportedWallets={[
-            metamaskWallet(),
-            walletConnect({
-              projectId: 'YOUR_PROJECT_ID',
-            }),
-          ]}
+          supportedWallets={[metamaskWallet(), walletConnect()]}
           clientId="your-client-id"
         >
           <Container maxWidth="sm">

@@ -3,27 +3,34 @@ import {
   Box,
   Button,
   FormControl,
-  FormHelperText,
-  InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
   Skeleton,
   Stack,
-  Switch,
   Typography,
 } from '@mui/material';
 import { Metadata } from 'next';
 import Image from 'next/image';
 import { eth } from '@/assets/coin/index';
-import { arrow } from '@/assets/sign';
-import { DynamicWallet } from '@/components/bar';
-import { cloneElement, useEffect, useState } from 'react';
-import { useBalance, useSwitchChain } from '@thirdweb-dev/react';
+import { useRef, useState } from 'react';
+import {
+  ConnectWallet,
+  Web3Button,
+  useBalance,
+  useConnectionStatus,
+  useSetConnectionStatus,
+  useSwitchChain,
+  useWalletConfig,
+  useWalletConnect,
+} from '@thirdweb-dev/react';
+
 import { NATIVE_TOKEN_ADDRESS } from '@thirdweb-dev/sdk';
 import SendIcon from '@mui/icons-material/Send';
 import { ChainId } from '@thirdweb-dev/sdk';
 import React from 'react';
+import { useConnect, metamaskWallet } from '@thirdweb-dev/react';
+
 //only be allowed in server component
 const metadata: Metadata = {
   title: 'acorus bridge',
@@ -33,6 +40,9 @@ export default function Home(this: any) {
   const [token, setToken] = useState('0');
   const { data, isLoading } = useBalance(NATIVE_TOKEN_ADDRESS);
   const switchChain = useSwitchChain();
+  const connectionStatus = useConnectionStatus();
+  const [value, setValue] = useState('');
+  const result = value.localeCompare(data?.displayValue!);
 
   const handleChange = (type: string, event: SelectChangeEvent) => {
     if (type === 'chain') {
@@ -43,19 +53,29 @@ export default function Home(this: any) {
       setToken(event.target.value);
     }
   };
-  function validate(e: React.FormEvent<HTMLInputElement>) {
-    const inputValue = e.currentTarget.value;
+  function validate(event: React.FormEvent<HTMLInputElement>) {
+    let pattern = /^[0-9.]+$/;
+    let newValue = '';
+    let decimalCount = 0;
 
-    const regex = /^[0-9.]+$/;
+    if (event.currentTarget.value[0] === '.') {
+      newValue += '0';
+    }
 
-    if (!regex.test(inputValue)) {
-      e.currentTarget.value = inputValue.replace(/[^0-9.]/g, '');
+    for (let i = 0; i < event.currentTarget.value.length; i++) {
+      let char = event.currentTarget.value[i];
+
+      if (char === '.') {
+        if (decimalCount === 0) {
+          newValue += char;
+          decimalCount++;
+        }
+      } else if (pattern.test(char)) {
+        newValue += char;
+      }
     }
-    const result = e.currentTarget.value.localeCompare(data?.displayValue!);
-    console.log(result);
-    if (result === 1) {
-      e.currentTarget.value = parseFloat(data?.displayValue!).toFixed(8);
-    }
+    event.currentTarget.value = newValue;
+    setValue(newValue);
   }
   return (
     <Box mt={8}>
@@ -68,7 +88,7 @@ export default function Home(this: any) {
         <Typography variant="h1" fontSize={32} color={'#cbcbcb'}>
           Bridge
         </Typography>
-        <DynamicWallet theme={'dark'} modalTitleIconUrl={''} />
+        <ConnectWallet theme={'dark'} modalTitleIconUrl={''} />
       </Stack>
       <Button
         sx={{
@@ -117,9 +137,6 @@ export default function Home(this: any) {
         px={3}
         sx={{
           bgcolor: 'grey.500',
-          '&:hover, &:hover *': {
-            bgcolor: 'grey.300',
-          },
         }}
       >
         <Stack
@@ -172,6 +189,41 @@ export default function Home(this: any) {
           </Typography>
         </Stack>
       </Box>
+      <Stack alignItems={'center'}>
+        {connectionStatus === 'connected' && result === -1 ? (
+          <Button
+            variant="contained"
+            sx={{
+              mt: 8,
+              height: 50,
+              borderRadius: 4,
+              width: '60%',
+              bgcolor: 'rgb(38,43,51)',
+              color: 'rgb(203,203,203)',
+            }}
+          >
+            Continue
+          </Button>
+        ) : (
+          <Button
+            disabled
+            onClick={() => {}}
+            variant="contained"
+            sx={{
+              mt: 8,
+              height: 50,
+              borderRadius: 4,
+              width: '60%',
+              bgcolor: 'red',
+              color: 'rgb(203,203,203)',
+            }}
+          >
+            {connectionStatus !== 'connected'
+              ? 'Connect Wallet'
+              : 'have not enough balance'}
+          </Button>
+        )}
+      </Stack>
     </Box>
   );
 }
