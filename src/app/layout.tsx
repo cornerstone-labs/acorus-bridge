@@ -8,7 +8,7 @@ import {
   metamaskWallet,
   walletConnect,
 } from '@thirdweb-dev/react';
-import { Gnosis } from '@thirdweb-dev/chains';
+import { ScrollSepoliaTestnet } from '@thirdweb-dev/chains';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,8 +21,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ThirdwebProvider
+          activeChain={ScrollSepoliaTestnet}
           supportedWallets={[metamaskWallet(), walletConnect()]}
-          clientId="your-client-id"
+          clientId="dcd20a683635565189cb9b0aca8105de"
         >
           <Container maxWidth="sm">
             <NavBar />

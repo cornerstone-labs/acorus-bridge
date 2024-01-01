@@ -38,5 +38,14 @@ input::-webkit-inner-spin-button {
 .MuiButtonBase-root:disabled {
   cursor: not-allowed;
   pointer-events: auto;
-  background: rgb(203,203,203)
+  background: rgb(203, 203, 203);
+}
+
+.web3Button {
+  margin-top: 32px;
+  height: 50px;
+  border-radius: 32px;
+  width: 60%;
+  color: rgb(203, 203, 203);
+  background-color: rgb(38, 43, 51);
 }

@@ -1,4 +1,5 @@
 'use client';
+import { eth } from '@/assets/coin/index';
 import {
   Box,
   Button,
@@ -10,31 +11,24 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { Metadata } from 'next';
 import Image from 'next/image';
-import { eth } from '@/assets/coin/index';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
+import SendIcon from '@mui/icons-material/Send';
 import {
   ConnectWallet,
   Web3Button,
   useBalance,
   useConnectionStatus,
-  useSetConnectionStatus,
+  useContract,
+  useContractWrite,
+  useSigner,
   useSwitchChain,
-  useWalletConfig,
-  useWalletConnect,
 } from '@thirdweb-dev/react';
-
-import { NATIVE_TOKEN_ADDRESS } from '@thirdweb-dev/sdk';
-import SendIcon from '@mui/icons-material/Send';
-import { ChainId } from '@thirdweb-dev/sdk';
+import { NATIVE_TOKEN_ADDRESS, SmartContract } from '@thirdweb-dev/sdk';
 import React from 'react';
-import { useConnect, metamaskWallet } from '@thirdweb-dev/react';
+import L2pool from '../abi/L2Pool.json';
+import { BaseContract } from 'ethers';
 
-//only be allowed in server component
-const metadata: Metadata = {
-  title: 'acorus bridge',
-};
 export default function Home(this: any) {
   const [chainId, setChainId] = useState<string>('10');
   const [token, setToken] = useState('0');
@@ -42,7 +36,15 @@ export default function Home(this: any) {
   const switchChain = useSwitchChain();
   const connectionStatus = useConnectionStatus();
   const [value, setValue] = useState('');
-  const result = value.localeCompare(data?.displayValue!);
+  const result = parseFloat(value) > parseFloat(data?.displayValue!);
+  const signer = useSigner();
+  const address = '0x1AaAB19C81e25242BaC1E6da13934B5b00Dff4Cc';
+  const { contract } = useContract(address, L2pool.abi);
+
+  const { mutateAsync } = useContractWrite(
+    contract,
+    'WithdrawETHtoOfficialBridge'
+  );
 
   const handleChange = (type: string, event: SelectChangeEvent) => {
     if (type === 'chain') {
@@ -57,6 +59,7 @@ export default function Home(this: any) {
     let pattern = /^[0-9.]+$/;
     let newValue = '';
     let decimalCount = 0;
+    let zeroCount = 0;
 
     if (event.currentTarget.value[0] === '.') {
       newValue += '0';
@@ -66,14 +69,29 @@ export default function Home(this: any) {
       let char = event.currentTarget.value[i];
 
       if (char === '.') {
+        if (zeroCount > 0) {
+          newValue += '0';
+          zeroCount = 0;
+        }
         if (decimalCount === 0) {
           newValue += char;
           decimalCount++;
         }
+      } else if (char === '0') {
+        zeroCount++;
       } else if (pattern.test(char)) {
+        if (zeroCount > 0) {
+          newValue += '0'.repeat(zeroCount);
+          zeroCount = 0;
+        }
         newValue += char;
       }
     }
+
+    if (zeroCount > 0) {
+      newValue += '0'.repeat(zeroCount);
+    }
+
     event.currentTarget.value = newValue;
     setValue(newValue);
   }
@@ -118,6 +136,7 @@ export default function Home(this: any) {
           >
             <MenuItem value={10}>Optimism</MenuItem>
             <MenuItem value={42161}>Arbitrum</MenuItem>
+            <MenuItem value={534351}>Scroll</MenuItem>
           </Select>
         </FormControl>
         <Button
@@ -145,6 +164,7 @@ export default function Home(this: any) {
           alignItems={'center'}
         >
           <Box
+            inputMode={'numeric'}
             width={'200px'}
             type="text"
             maxLength={10}
@@ -152,6 +172,7 @@ export default function Home(this: any) {
             bgcolor={'grey.500'}
             fontSize={30}
             placeholder="0.0"
+            pattern={'[0-9]*'}
             onInput={(e) => validate(e)}
           />
           <Stack
@@ -190,39 +211,17 @@ export default function Home(this: any) {
         </Stack>
       </Box>
       <Stack alignItems={'center'}>
-        {connectionStatus === 'connected' && result === -1 ? (
-          <Button
-            variant="contained"
-            sx={{
-              mt: 8,
-              height: 50,
-              borderRadius: 4,
-              width: '60%',
-              bgcolor: 'rgb(38,43,51)',
-              color: 'rgb(203,203,203)',
-            }}
+        {connectionStatus === 'connected' ? (
+          <Web3Button
+            style={{ transform: 'unset' }}
+            className="web3Button"
+            isDisabled={result}
+            contractAddress={address}
+            action={() => mutateAsync()}
           >
             Continue
-          </Button>
-        ) : (
-          <Button
-            disabled
-            onClick={() => {}}
-            variant="contained"
-            sx={{
-              mt: 8,
-              height: 50,
-              borderRadius: 4,
-              width: '60%',
-              bgcolor: 'red',
-              color: 'rgb(203,203,203)',
-            }}
-          >
-            {connectionStatus !== 'connected'
-              ? 'Connect Wallet'
-              : 'have not enough balance'}
-          </Button>
-        )}
+          </Web3Button>
+        ) : null}
       </Stack>
     </Box>
   );
