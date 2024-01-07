@@ -3,7 +3,13 @@ import { eth } from '@/assets/coin/index';
 import {
   Box,
   Button,
+  Drawer,
   FormControl,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -12,8 +18,8 @@ import {
   Typography,
 } from '@mui/material';
 import Image from 'next/image';
-import { useState } from 'react';
-import SendIcon from '@mui/icons-material/Send';
+import { Key, useContext, useEffect, useState } from 'react';
+import { ChainId, useSupportedChains } from '@thirdweb-dev/react';
 import {
   ConnectWallet,
   Web3Button,
@@ -21,34 +27,35 @@ import {
   useConnectionStatus,
   useContract,
   useContractWrite,
-  useSigner,
-  useSwitchChain,
 } from '@thirdweb-dev/react';
-import { NATIVE_TOKEN_ADDRESS, SmartContract } from '@thirdweb-dev/sdk';
+import { NATIVE_TOKEN_ADDRESS } from '@thirdweb-dev/sdk';
 import React from 'react';
 import L2pool from '../abi/L2Pool.json';
-import { BaseContract } from 'ethers';
+import { ChainContext } from './context';
 
 export default function Home(this: any) {
-  const [chainId, setChainId] = useState<string>('10');
   const [token, setToken] = useState('0');
   const { data, isLoading } = useBalance(NATIVE_TOKEN_ADDRESS);
-  const switchChain = useSwitchChain();
   const connectionStatus = useConnectionStatus();
   const [value, setValue] = useState('');
   const result = parseFloat(value) > parseFloat(data?.displayValue!);
-  const signer = useSigner();
-  const address = '0x1AaAB19C81e25242BaC1E6da13934B5b00Dff4Cc';
+  const { activeChain, setActiveChain } = useContext(ChainContext);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [address, setAddress] = useState<string>(
+    '0x78376F00F9d61Cd99D62e1B8db34Ffe22e23937d'
+  );
   const { contract } = useContract(address, L2pool.abi);
 
   const { mutateAsync } = useContractWrite(
     contract,
     'WithdrawETHtoOfficialBridge'
   );
+  const chains = useSupportedChains();
+  console.log(chains);
 
   const handleChange = (type: string, event: SelectChangeEvent) => {
     if (type === 'chain') {
-      setChainId(event.target.value);
+      setActiveChain(event.target.value);
       return;
     }
     if (type === 'token') {
@@ -125,28 +132,8 @@ export default function Home(this: any) {
           From
         </Typography>
 
-        <FormControl sx={{ m: 1, minWidth: 120 }}>
-          <Select
-            sx={{ color: '#cbcbcb', borderColor: '#cbcbcb' }}
-            size="small"
-            value={chainId}
-            onChange={handleChange.bind(this, 'chain')}
-            displayEmpty
-            inputProps={{ 'aria-label': 'Without label' }}
-          >
-            <MenuItem value={10}>Optimism</MenuItem>
-            <MenuItem value={42161}>Arbitrum</MenuItem>
-            <MenuItem value={534351}>Scroll</MenuItem>
-          </Select>
-        </FormControl>
-        <Button
-          color="info"
-          endIcon={<SendIcon />}
-          onClick={() => {
-            switchChain(parseInt(chainId));
-          }}
-        >
-          Confirm
+        <Button color="secondary" onClick={() => setDrawerOpen(true)}>
+          {ChainId[activeChain]}
         </Button>
       </Stack>
       <Box
@@ -213,16 +200,57 @@ export default function Home(this: any) {
       <Stack alignItems={'center'}>
         {connectionStatus === 'connected' ? (
           <Web3Button
+            onSuccess={() => {
+              console.log('success');
+            }}
             style={{ transform: 'unset' }}
             className="web3Button"
             isDisabled={result}
             contractAddress={address}
-            action={() => mutateAsync()}
+            action={() => {
+              // switchChain(parseInt(chainId));
+              // mutateAsync();
+            }}
           >
             Continue
           </Web3Button>
         ) : null}
       </Stack>
+      <Drawer
+        anchor={'left'}
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+      >
+        <Stack minWidth={300} width={'20vw'}>
+          <List
+            sx={{
+              bgcolor: 'rgb(38, 43, 51)',
+              color: 'rgb(203, 203, 203)',
+              flex: 1,
+            }}
+          >
+            {Object.keys(ChainId)
+              .slice(16, -1)
+              .map((v, i) => (
+                <ListItem
+                  key={i}
+                  onClick={(e) => {
+                    console.log(e);
+                  }}
+                >
+                  <ListItemButton
+                    onClick={() =>
+                      setActiveChain(ChainId[v as keyof typeof ChainId])
+                    }
+                  >
+                    <ListItemIcon></ListItemIcon>
+                    <ListItemText primary={v} />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+          </List>
+        </Stack>
+      </Drawer>
     </Box>
   );
 }
