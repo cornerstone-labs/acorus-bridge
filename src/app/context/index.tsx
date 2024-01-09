@@ -1,5 +1,7 @@
+import { chainIndex } from '@/dtos';
 import { Dispatch, SetStateAction, createContext } from 'react';
 
-export const ChainContext = createContext<
-  Dispatch<SetStateAction<string | undefined>> | any
->(null);
+export const ChainContext = createContext<{
+  setActiveChain: Dispatch<SetStateAction<chainIndex>>;
+  activeChain: chainIndex;
+} | null>(null);

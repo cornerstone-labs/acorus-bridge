@@ -9,10 +9,10 @@ import {
   useSupportedChains,
   walletConnect,
 } from '@thirdweb-dev/react';
-import { ScrollSepoliaTestnet } from '@thirdweb-dev/chains';
-import { ChainId } from '@thirdweb-dev/react';
+import { ScrollSepoliaTestnet, Sepolia } from '@thirdweb-dev/chains';
 import { useState } from 'react';
 import { ChainContext } from './context';
+import { chainIndex } from '@/dtos';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,14 +21,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [activeChain, setActiveChain] = useState<string>('10');
-
+  const [activeChain, setActiveChain] = useState<chainIndex>('Sepolia');
+  const assignChain = { Sepolia, ScrollSepoliaTestnet };
   return (
     <html lang="en">
       <body className={inter.className}>
         <ChainContext.Provider value={{ activeChain, setActiveChain }}>
           <ThirdwebProvider
-            activeChain={ChainId[+activeChain]?.toLocaleLowerCase()}
+            activeChain={assignChain[activeChain as keyof typeof assignChain]}
             supportedWallets={[metamaskWallet(), walletConnect()]}
             clientId="dcd20a683635565189cb9b0aca8105de"
           >

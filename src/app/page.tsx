@@ -4,27 +4,22 @@ import {
   Box,
   Button,
   Drawer,
-  FormControl,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
   Skeleton,
   Stack,
   Typography,
 } from '@mui/material';
 import Image from 'next/image';
-import { Key, useContext, useEffect, useState } from 'react';
-import { ChainId, useSupportedChains } from '@thirdweb-dev/react';
+import { useContext, useEffect, useState } from 'react';
 import {
   ConnectWallet,
   Web3Button,
+  useAddress,
   useBalance,
-  useConnectionStatus,
   useContract,
   useContractWrite,
 } from '@thirdweb-dev/react';
@@ -32,36 +27,25 @@ import { NATIVE_TOKEN_ADDRESS } from '@thirdweb-dev/sdk';
 import React from 'react';
 import L2pool from '../abi/L2Pool.json';
 import { ChainContext } from './context';
+import { chain, chainIndex } from '@/dtos';
 
 export default function Home(this: any) {
-  const [token, setToken] = useState('0');
   const { data, isLoading } = useBalance(NATIVE_TOKEN_ADDRESS);
-  const connectionStatus = useConnectionStatus();
   const [value, setValue] = useState('');
   const result = parseFloat(value) > parseFloat(data?.displayValue!);
-  const { activeChain, setActiveChain } = useContext(ChainContext);
+  const { activeChain, setActiveChain } = useContext(ChainContext)!;
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [address, setAddress] = useState<string>(
-    '0x78376F00F9d61Cd99D62e1B8db34Ffe22e23937d'
-  );
-  const { contract } = useContract(address, L2pool.abi);
 
+  const { contract } = useContract(
+    chain[activeChain as chainIndex],
+    L2pool.abi
+  );
+  const address = useAddress();
   const { mutateAsync } = useContractWrite(
     contract,
     'WithdrawETHtoOfficialBridge'
   );
-  const chains = useSupportedChains();
-  console.log(chains);
 
-  const handleChange = (type: string, event: SelectChangeEvent) => {
-    if (type === 'chain') {
-      setActiveChain(event.target.value);
-      return;
-    }
-    if (type === 'token') {
-      setToken(event.target.value);
-    }
-  };
   function validate(event: React.FormEvent<HTMLInputElement>) {
     let pattern = /^[0-9.]+$/;
     let newValue = '';
@@ -133,7 +117,7 @@ export default function Home(this: any) {
         </Typography>
 
         <Button color="secondary" onClick={() => setDrawerOpen(true)}>
-          {ChainId[activeChain]}
+          {activeChain}
         </Button>
       </Stack>
       <Box
@@ -168,18 +152,8 @@ export default function Home(this: any) {
             alignItems={'center'}
           >
             <Image src={eth} alt="ETH" width={24} height={24} />
-            <FormControl sx={{ m: 1, minWidth: 120 }}>
-              <Select
-                sx={{ color: '#cbcbcb', borderColor: '#cbcbcb' }}
-                size="small"
-                value={token}
-                onChange={handleChange.bind(this, 'token')}
-                displayEmpty
-                inputProps={{ 'aria-label': 'Without label' }}
-              >
-                <MenuItem value={'0'}>ETH</MenuItem>
-              </Select>
-            </FormControl>
+
+            <Button sx={{ fontSize: 18 }}>{'ETH'}</Button>
           </Stack>
         </Stack>
         <Stack pt={1} flexDirection={'row'} color={'#3d424d'}>
@@ -198,56 +172,44 @@ export default function Home(this: any) {
         </Stack>
       </Box>
       <Stack alignItems={'center'}>
-        {connectionStatus === 'connected' ? (
-          <Web3Button
-            onSuccess={() => {
-              console.log('success');
-            }}
-            style={{ transform: 'unset' }}
-            className="web3Button"
-            isDisabled={result}
-            contractAddress={address}
-            action={() => {
-              // switchChain(parseInt(chainId));
-              // mutateAsync();
-            }}
-          >
-            Continue
-          </Web3Button>
-        ) : null}
+        (
+        <Web3Button
+          onSuccess={() => {
+            console.log('success');
+          }}
+          style={{ transform: 'unset' }}
+          className="web3Button"
+          isDisabled={result}
+          action={() => {
+            mutateAsync({ args: [address] });
+          }}
+          contractAddress={chain[activeChain as chainIndex]}
+        >
+          Continue
+        </Web3Button>
+        )
       </Stack>
       <Drawer
         anchor={'left'}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
       >
-        <Stack minWidth={300} width={'20vw'}>
+        <Stack minWidth={300}>
           <List
             sx={{
+              flex: '1',
               bgcolor: 'rgb(38, 43, 51)',
               color: 'rgb(203, 203, 203)',
-              flex: 1,
             }}
           >
-            {Object.keys(ChainId)
-              .slice(16, -1)
-              .map((v, i) => (
-                <ListItem
-                  key={i}
-                  onClick={(e) => {
-                    console.log(e);
-                  }}
-                >
-                  <ListItemButton
-                    onClick={() =>
-                      setActiveChain(ChainId[v as keyof typeof ChainId])
-                    }
-                  >
-                    <ListItemIcon></ListItemIcon>
-                    <ListItemText primary={v} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
+            {Object.keys(chain).map((v, i) => (
+              <ListItem key={i}>
+                <ListItemButton onClick={() => setActiveChain(v)}>
+                  <ListItemIcon></ListItemIcon>
+                  <ListItemText primary={v} />
+                </ListItemButton>
+              </ListItem>
+            ))}
           </List>
         </Stack>
       </Drawer>
