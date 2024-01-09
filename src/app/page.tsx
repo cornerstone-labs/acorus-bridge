@@ -204,7 +204,7 @@ export default function Home(this: any) {
           >
             {Object.keys(chain).map((v, i) => (
               <ListItem key={i}>
-                <ListItemButton onClick={() => setActiveChain(v)}>
+                <ListItemButton onClick={() => setActiveChain(v as chainIndex)}>
                   <ListItemIcon></ListItemIcon>
                   <ListItemText primary={v} />
                 </ListItemButton>
