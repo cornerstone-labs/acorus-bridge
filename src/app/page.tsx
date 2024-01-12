@@ -14,38 +14,52 @@ import {
   Typography,
 } from '@mui/material';
 import Image from 'next/image';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import {
   ConnectWallet,
   Web3Button,
   useAddress,
   useBalance,
   useContract,
+  useContractRead,
   useContractWrite,
 } from '@thirdweb-dev/react';
 import { NATIVE_TOKEN_ADDRESS } from '@thirdweb-dev/sdk';
 import React from 'react';
-import L2pool from '../abi/L2Pool.json';
 import { ChainContext } from './context';
 import { chain, chainIndex } from '@/dtos';
+import { abi } from '@/abi/L2Pool';
 
 export default function Home(this: any) {
-  const { data, isLoading } = useBalance(NATIVE_TOKEN_ADDRESS);
+  const { data: balance } = useBalance(NATIVE_TOKEN_ADDRESS);
   const [value, setValue] = useState('');
-  const result = parseFloat(value) > parseFloat(data?.displayValue!);
+  const result = parseFloat(value) > parseFloat(balance?.displayValue!);
   const { activeChain, setActiveChain } = useContext(ChainContext)!;
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const { contract } = useContract(
+  const { contract, isLoading } = useContract(
     chain[activeChain as chainIndex],
-    L2pool.abi
+    abi
   );
   const address = useAddress();
-  const { mutateAsync } = useContractWrite(
+  const { mutateAsync: WithdrawETHtoOfficialBridge } = useContractWrite(
     contract,
     'WithdrawETHtoOfficialBridge'
   );
-
+  const { data: role } = useContractRead(contract, 'WithdrawToBridge_Role');
+  const { mutateAsync: grantRole } = useContractWrite(contract, 'grantRole');
+  const grant = useCallback(async () => {
+    try {
+      const data = await grantRole({ args: [role, address] });
+      console.log(data);
+      console.info('contract call successs', data);
+    } catch (err) {
+      console.error('contract call failure', err);
+    }
+  }, [address, grantRole, role]);
+  useEffect(() => {
+    grant();
+  }, [grant]);
   function validate(event: React.FormEvent<HTMLInputElement>) {
     let pattern = /^[0-9.]+$/;
     let newValue = '';
@@ -160,7 +174,7 @@ export default function Home(this: any) {
           <Typography fontSize={14}>Balance:</Typography>
           <Typography fontSize={14}>
             {!isLoading ? (
-              parseFloat(data?.displayValue!).toFixed(8)
+              parseFloat(balance?.displayValue!).toFixed(8)
             ) : (
               <Skeleton
                 animation="wave"
@@ -172,7 +186,6 @@ export default function Home(this: any) {
         </Stack>
       </Box>
       <Stack alignItems={'center'}>
-        (
         <Web3Button
           onSuccess={() => {
             console.log('success');
@@ -181,13 +194,12 @@ export default function Home(this: any) {
           className="web3Button"
           isDisabled={result}
           action={() => {
-            mutateAsync({ args: [address] });
+            WithdrawETHtoOfficialBridge({ args: [address] });
           }}
           contractAddress={chain[activeChain as chainIndex]}
         >
           Continue
         </Web3Button>
-        )
       </Stack>
       <Drawer
         anchor={'left'}

@@ -6,7 +6,6 @@ import { Container } from '@mui/material';
 import {
   ThirdwebProvider,
   metamaskWallet,
-  useSupportedChains,
   walletConnect,
 } from '@thirdweb-dev/react';
 import { ScrollSepoliaTestnet, Sepolia } from '@thirdweb-dev/chains';
@@ -21,8 +20,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [activeChain, setActiveChain] = useState<chainIndex>('Sepolia');
-  const assignChain = { Sepolia, ScrollSepoliaTestnet };
+  const [activeChain, setActiveChain] = useState<chainIndex>('ScrollSepolia');
+  const ScrollSepolia = {
+    ...ScrollSepoliaTestnet,
+    rpc: [
+      'https://rpc.ankr.com/scroll_sepolia_testnet/7f3ae11204e03961b67c557c4996244f0a53222b23c31a7baf9ae91c6bd89702',
+    ],
+  };
+  const assignChain = { Sepolia, ScrollSepolia };
   return (
     <html lang="en">
       <body className={inter.className}>
