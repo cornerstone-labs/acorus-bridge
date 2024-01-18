@@ -12,22 +12,22 @@ import { ScrollSepoliaTestnet, Sepolia } from '@thirdweb-dev/chains';
 import { useState } from 'react';
 import { ChainContext } from './context';
 import { chain } from '@/dtos';
-
+const ScrollSepolia = {
+  ...ScrollSepoliaTestnet,
+  rpc: [
+    'https://rpc.ankr.com/scroll_sepolia_testnet/7f3ae11204e03961b67c557c4996244f0a53222b23c31a7baf9ae91c6bd89702',
+  ],
+};
 const inter = Inter({ subsets: ['latin'] });
+export const assignChain = { Sepolia, ScrollSepolia };
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [activeChain, setActiveChain] = useState<chain | string>('');
-  const ScrollSepolia = {
-    ...ScrollSepoliaTestnet,
-    rpc: [
-      'https://rpc.ankr.com/scroll_sepolia_testnet/7f3ae11204e03961b67c557c4996244f0a53222b23c31a7baf9ae91c6bd89702',
-    ],
-  };
-  const assignChain = { Sepolia, ScrollSepolia };
+  const [activeChain, setActiveChain] = useState<chain>('Sepolia');
+
   return (
     <html lang="en">
       <body className={inter.className}>

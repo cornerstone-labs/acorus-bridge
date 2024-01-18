@@ -1,8 +1,8 @@
 'use client';
-import { eth } from '@/assets/coin/index';
+import { eth } from '@/assets/coinAssets/index';
 import { Box, Button, Skeleton, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import {
   ConnectWallet,
   Web3Button,
@@ -17,8 +17,6 @@ import React from 'react';
 import { ChainContext } from './context';
 import { chainL1, chainL1Index } from '@/dtos';
 import { Modal } from '@/components/dialog';
-import { Item } from '@/components/item';
-import L1Pic from '@/assets/chain';
 
 export default function Home(this: any) {
   const { data: balance, isLoading: loadingBalance } =
@@ -34,9 +32,6 @@ export default function Home(this: any) {
     contract,
     'WithdrawETHtoOfficialBridge'
   );
-  useEffect(() => {
-    setActiveChain('Sepolia');
-  });
 
   function validate(event: React.FormEvent<HTMLInputElement>) {
     let pattern = /^[0-9.]+$/;
@@ -193,23 +188,13 @@ export default function Home(this: any) {
         </Web3Button>
       </Stack>
 
-      <Modal open={modalOpen} handleClose={setModalOpen} title={'Choose Chain'}>
-        <Box
-          display={'flex'}
-          gap={2}
-          justifyContent={'center'}
-          flexWrap={'wrap'}
-        >
-          {Object.keys(chainL1).map((chain, index) => (
-            <Item
-              label={chain}
-              key={index}
-              handleClick={setActiveChain}
-              source={L1Pic[chain as chainL1Index]}
-            />
-          ))}
-        </Box>
-      </Modal>
+      <Modal
+        open={modalOpen}
+        handleClose={setModalOpen}
+        title={'Choose Chain'}
+        placeholder="select chain by name  "
+        setActiveChain={setActiveChain}
+      />
     </Box>
   );
 }

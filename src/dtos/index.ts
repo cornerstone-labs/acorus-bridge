@@ -8,4 +8,4 @@ export enum chainL2 {
 
 export type chainL1Index = keyof typeof chainL1;
 export type chainL2Index = keyof typeof chainL2;
-export type chain = chainL1Index & chainL2Index;
+export type chain = chainL1Index | chainL2Index;

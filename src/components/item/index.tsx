@@ -1,16 +1,23 @@
-import { Box, Button, Typography } from '@mui/material';
+import { assignChain } from '@/app/layout';
+import { chain } from '@/dtos';
+import { Button, Typography } from '@mui/material';
+import { useSwitchChain } from '@thirdweb-dev/react';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import Image from 'next/image';
 interface ItemProps {
   label: string;
-  handleClick: Function;
+  handleSwitchChain: React.Dispatch<React.SetStateAction<chain>>;
   source?: StaticImport | string;
+  handleClose: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export const Item: React.FC<ItemProps> = ({
   label,
-  handleClick,
+  handleSwitchChain,
+  handleClose,
   source = '',
 }) => {
+  const switchChain = useSwitchChain();
+
   return (
     <Button
       sx={{
@@ -24,8 +31,9 @@ export const Item: React.FC<ItemProps> = ({
         color: '#fff',
       }}
       onClick={() => {
-        console.log(2);
-        handleClick(label);
+        handleSwitchChain(label as chain);
+        switchChain(assignChain[label as keyof typeof assignChain].chainId);
+        handleClose(false);
       }}
     >
       <Image alt="img" src={source} width={36} height={36} />

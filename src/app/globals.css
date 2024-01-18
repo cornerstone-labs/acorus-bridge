@@ -42,11 +42,11 @@ input::-webkit-inner-spin-button {
 }
 
 .web3Button {
-  height: 50px;
-  border-radius: 32px;
-  width: 60%;
-  color: rgb(203, 203, 203);
-  background-color: rgb(38, 43, 51);
+  height: 50px !important;
+  border-radius: 32px !important;
+  width: 60% !important;
+  color: rgb(203, 203, 203) !important;
+  background-color: rgb(38, 43, 51) !important;
 }
 
 ::-webkit-scrollbar {
@@ -71,4 +71,5 @@ input::-webkit-inner-spin-button {
 
 .css-tlc64q-MuiPaper-root-MuiDialog-paper {
   background: rgb(19, 19, 21);
+  border-radius: 20px;
 }
