@@ -12,6 +12,7 @@ import React, { useState } from 'react';
 import { Item } from '../item';
 import L1Pic from '@/assets/chainAssets';
 
+
 interface ModalProps extends DialogProps {
   handleClose: React.Dispatch<React.SetStateAction<boolean>>;
   title: string;
