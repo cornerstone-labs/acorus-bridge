@@ -2,7 +2,7 @@
 import { eth } from '@/assets/coin/index';
 import { Box, Button, Skeleton, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   ConnectWallet,
   Web3Button,
@@ -15,9 +15,10 @@ import {
 import { NATIVE_TOKEN_ADDRESS } from '@thirdweb-dev/sdk';
 import React from 'react';
 import { ChainContext } from './context';
-import { chain, chainIndex } from '@/dtos';
+import { chainL1, chainL1Index } from '@/dtos';
 import { Modal } from '@/components/dialog';
 import { Item } from '@/components/item';
+import L1Pic from '@/assets/chain';
 
 export default function Home(this: any) {
   const { data: balance, isLoading: loadingBalance } =
@@ -27,12 +28,15 @@ export default function Home(this: any) {
   const { activeChain, setActiveChain } = useContext(ChainContext)!;
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const status = useConnectionStatus();
-  const { contract } = useContract(chain[activeChain as chainIndex]);
+  const { contract } = useContract(chainL1[activeChain as chainL1Index]);
   const address = useAddress();
   const { mutateAsync: WithdrawETHtoOfficialBridge } = useContractWrite(
     contract,
     'WithdrawETHtoOfficialBridge'
   );
+  useEffect(() => {
+    setActiveChain('Sepolia');
+  });
 
   function validate(event: React.FormEvent<HTMLInputElement>) {
     let pattern = /^[0-9.]+$/;
@@ -85,7 +89,11 @@ export default function Home(this: any) {
         <Typography variant="h1" fontSize={32} color={'#cbcbcb'}>
           Bridge
         </Typography>
-        <ConnectWallet theme={'dark'} modalTitleIconUrl={''} />
+        <ConnectWallet
+          theme={'dark'}
+          modalTitleIconUrl={''}
+          hideTestnetFaucet={true}
+        />
       </Stack>
       <Button
         sx={{
@@ -107,7 +115,7 @@ export default function Home(this: any) {
         </Typography>
 
         <Button color="secondary" onClick={() => setModalOpen(true)}>
-          Ethereum
+          {activeChain}
         </Button>
         <Typography />
       </Stack>
@@ -168,7 +176,7 @@ export default function Home(this: any) {
           )}
         </Stack>
       </Box>
-      <Stack alignItems={'center'}>
+      <Stack alignItems={'center'} mt={4}>
         <Web3Button
           onSuccess={() => {
             console.log('success');
@@ -179,7 +187,7 @@ export default function Home(this: any) {
           action={() => {
             WithdrawETHtoOfficialBridge({ args: [address] });
           }}
-          contractAddress={chain[activeChain as chainIndex]}
+          contractAddress={chainL1[activeChain as chainL1Index]}
         >
           Continue
         </Web3Button>
@@ -192,8 +200,13 @@ export default function Home(this: any) {
           justifyContent={'center'}
           flexWrap={'wrap'}
         >
-          {Object.keys(chain).map((chain, index) => (
-            <Item label={chain} key={index} handleClick={setActiveChain} />
+          {Object.keys(chainL1).map((chain, index) => (
+            <Item
+              label={chain}
+              key={index}
+              handleClick={setActiveChain}
+              source={L1Pic[chain as chainL1Index]}
+            />
           ))}
         </Box>
       </Modal>

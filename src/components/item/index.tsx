@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import Image from 'next/image';
 interface ItemProps {
@@ -12,23 +12,24 @@ export const Item: React.FC<ItemProps> = ({
   source = '',
 }) => {
   return (
-    <Box
-      sx={{ '&:hover': { cursor: 'pointer' } }}
+    <Button
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        flex: 1,
+        gap: 1.6,
+        minWidth: 180,
+        bgcolor: 'rgb(38, 43, 51)',
+        borderRadius: 2,
+        color: '#fff',
+      }}
       onClick={() => {
         console.log(2);
         handleClick(label);
       }}
-      alignItems={'center'}
-      minWidth={180}
-      flex={1}
-      gap={2}
-      color={'#fff'}
-      display={'flex'}
-      bgcolor={'rgb(38, 43, 51)'}
-      borderRadius={2}
     >
-      <Image alt="img" src={source} />
+      <Image alt="img" src={source} width={36} height={36} />
       <Typography py={2}>{label}</Typography>
-    </Box>
+    </Button>
   );
 };
