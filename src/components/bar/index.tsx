@@ -10,8 +10,8 @@ export default function NavBar() {
       alignItems={'center'}
     >
       <Box></Box>
-      <Stack flexDirection={'row'}>
-        <Typography color={'rgb(227,57,44)'}>Liquidity</Typography>
+      <Stack flexDirection={'row'} gap={2}>
+        <Typography color={'rgb(227,57,44)'}>acorus bridge</Typography>
       </Stack>
     </Stack>
   );

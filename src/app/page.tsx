@@ -1,6 +1,17 @@
 'use client';
 import { eth } from '@/assets/coinAssets/index';
-import { Box, Button, Skeleton, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  List,
+  ListItemButton,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Stack,
+  Typography,
+} from '@mui/material';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+
 import Image from 'next/image';
 import { useContext, useState } from 'react';
 import {
@@ -8,71 +19,52 @@ import {
   Web3Button,
   useAddress,
   useBalance,
-  useConnectionStatus,
   useContract,
   useContractWrite,
 } from '@thirdweb-dev/react';
 import { NATIVE_TOKEN_ADDRESS } from '@thirdweb-dev/sdk';
 import React from 'react';
-import { ChainContext } from './context';
-import { chainL1, chainL1Index } from '@/dtos';
-import { Modal } from '@/components/dialog';
-
+import { ChainContext } from '@/context';
+import { chain, chainL1, chainL1Index, chainL2, chainL2Index } from '@/dtos';
+import { CompositeInput } from '@/components/compositeInput';
+const options = ['Staking', 'Transfer'];
 export default function Home(this: any) {
-  const { data: balance, isLoading: loadingBalance } =
-    useBalance(NATIVE_TOKEN_ADDRESS);
+  const { data: balance } = useBalance(NATIVE_TOKEN_ADDRESS);
   const [value, setValue] = useState('');
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
   const result = parseFloat(value) > parseFloat(balance?.displayValue!);
   const { activeChain, setActiveChain } = useContext(ChainContext)!;
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const status = useConnectionStatus();
+
   const { contract } = useContract(chainL1[activeChain as chainL1Index]);
   const address = useAddress();
   const { mutateAsync: WithdrawETHtoOfficialBridge } = useContractWrite(
     contract,
     'WithdrawETHtoOfficialBridge'
   );
-
-  function validate(event: React.FormEvent<HTMLInputElement>) {
-    let pattern = /^[0-9.]+$/;
-    let newValue = '';
-    let decimalCount = 0;
-    let zeroCount = 0;
-
-    if (event.currentTarget.value[0] === '.') {
-      newValue += '0';
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [item, setItem] = useState<chain[]>(Object.keys(chainL1) as chain[]);
+  const handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleMenuItemClick = (
+    event: React.MouseEvent<HTMLElement>,
+    index: number
+  ) => {
+    setSelectedIndex(index);
+    if (index === 1) {
+      setActiveChain(Object.keys(chainL2)[0] as chainL2Index);
+      setItem(Object.keys(chainL2) as chain[]);
+    } else {
+      setActiveChain(Object.keys(chainL1)[0] as chainL1Index);
+      setItem(Object.keys(chainL1) as chain[]);
     }
+    setAnchorEl(null);
+  };
 
-    for (let i = 0; i < event.currentTarget.value.length; i++) {
-      let char = event.currentTarget.value[i];
-
-      if (char === '.') {
-        if (zeroCount > 0) {
-          newValue += '0';
-          zeroCount = 0;
-        }
-        if (decimalCount === 0) {
-          newValue += char;
-          decimalCount++;
-        }
-      } else if (char === '0') {
-        zeroCount++;
-      } else if (pattern.test(char)) {
-        if (zeroCount > 0) {
-          newValue += '0'.repeat(zeroCount);
-          zeroCount = 0;
-        }
-        newValue += char;
-      }
-    }
-
-    if (zeroCount > 0) {
-      newValue += '0'.repeat(zeroCount);
-    }
-
-    event.currentTarget.value = newValue;
-    setValue(newValue);
-  }
   return (
     <Box mt={8}>
       <Stack
@@ -90,87 +82,51 @@ export default function Home(this: any) {
           hideTestnetFaucet={true}
         />
       </Stack>
-      <Button
-        sx={{
-          marginTop: 2,
-          color: '#cbcbcb',
-          borderRadius: 20,
-          borderWidth: 2,
-          borderStyle: 'solid',
-          borderInlineColor: '#cbcbcb',
-        }}
-      >
-        <Typography minWidth={100} fontSize={14}>
-          stake
-        </Typography>
-      </Button>
-      <Stack flexDirection={'row'} mt={2} alignItems={'center'} gap={0.5}>
-        <Typography fontSize={14} color={'#cbcbcb'}>
-          From
-        </Typography>
 
-        <Button color="secondary" onClick={() => setModalOpen(true)}>
-          {activeChain}
-        </Button>
-        <Typography />
-      </Stack>
-      <Box
-        borderRadius={6}
-        pt={2}
-        pb={3}
-        px={3}
-        sx={{
-          bgcolor: 'grey.500',
-        }}
-      >
-        <Stack
-          flexDirection={'row'}
-          justifyContent={'space-between'}
-          alignItems={'center'}
-        >
-          <Box
-            inputMode={'numeric'}
-            width={'200px'}
-            type="text"
-            maxLength={10}
-            component={'input'}
-            bgcolor={'grey.500'}
-            fontSize={30}
-            placeholder="0.0"
-            pattern={'[0-9]*'}
-            onInput={(e) => validate(e)}
-          />
-          <Stack
-            flexDirection={'row'}
-            justifyContent={'center'}
-            alignItems={'center'}
+      <Box position={'relative'}>
+        <List component="nav" sx={{ width: 'fit-content' }}>
+          <ListItemButton
+            onClick={handleClickListItem}
+            sx={{
+              marginTop: 2,
+              color: '#cbcbcb',
+              borderWidth: 2,
+            }}
           >
-            <Image src={eth} alt="ETH" width={24} height={24} />
-
-            <Button sx={{ fontSize: 18 }}>{'ETH'}</Button>
-          </Stack>
-        </Stack>
-        <Stack pt={1} flexDirection={'row'} color={'#3d424d'}>
-          <Typography fontSize={14}>Balance:</Typography>
-          {status === 'connected' ? (
-            <Typography fontSize={14}>
-              {!loadingBalance ? (
-                parseFloat(balance?.displayValue!).toFixed(8)
-              ) : (
-                <Skeleton
-                  animation="wave"
-                  width={40.792}
-                  sx={{ bgcolor: 'grey.400' }}
-                />
-              )}
-            </Typography>
-          ) : (
-            <Typography fontSize={14}>
-              Please connect your wallet first
-            </Typography>
-          )}
-        </Stack>
+            <ListItemText primary={options[selectedIndex]} />
+            <ArrowDropDownIcon />
+          </ListItemButton>
+        </List>
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+        >
+          {options.map((option, index) => (
+            <MenuItem
+              key={option}
+              selected={index === selectedIndex}
+              onClick={(event) => handleMenuItemClick(event, index)}
+            >
+              <Typography color={'#cbcbcb'}>{option}</Typography>
+            </MenuItem>
+          ))}
+        </Menu>
       </Box>
+
+      <CompositeInput handleValue={setValue} item={item} setItem={setItem} />
+      {selectedIndex === 1 && (
+        <CompositeInput
+          direction={'To'}
+          handleValue={setValue}
+          item={item}
+          setItem={setItem}
+        />
+      )}
       <Stack alignItems={'center'} mt={4}>
         <Web3Button
           onSuccess={() => {
@@ -187,14 +143,39 @@ export default function Home(this: any) {
           Continue
         </Web3Button>
       </Stack>
-
-      <Modal
-        open={modalOpen}
-        handleClose={setModalOpen}
-        title={'Choose Chain'}
-        placeholder="select chain by name  "
-        setActiveChain={setActiveChain}
-      />
+      {!selectedIndex && (
+        <>
+          <Box
+            mt={4}
+            sx={{ border: '1.6px solid rgb(64, 66, 78)' }}
+            borderRadius={1.2}
+            display={'flex'}
+            alignItems={'center'}
+            justifyContent={'space-around'}
+          >
+            <Typography color={'#cbcbcb'}>token</Typography>
+            <Typography color={'#cbcbcb'}>your Liquidity</Typography>
+            <Typography color={'#cbcbcb'}>total</Typography>
+          </Box>
+          <Box
+            bgcolor={'rgb(38, 43, 51)'}
+            mt={2}
+            sx={{ border: '1.6px solid rgb(64, 66, 78)' }}
+            borderRadius={1.2}
+            display={'flex'}
+            alignItems={'center'}
+            justifyContent={'space-around'}
+            minHeight={40}
+          >
+            <Box display={'flex'} gap={1} alignItems={'center'}>
+              <Image src={eth} alt="ETH" width={20} height={20} />
+              <Typography color={'#cbcbcb'}>ETH</Typography>
+            </Box>
+            <Typography color={'#cbcbcb'}>130ETH</Typography>
+            <Typography color={'#cbcbcb'}>500ETH</Typography>
+          </Box>
+        </>
+      )}
     </Box>
   );
 }

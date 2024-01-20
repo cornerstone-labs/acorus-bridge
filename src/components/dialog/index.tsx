@@ -1,4 +1,4 @@
-import { chain, chainL1, chainL1Index } from '@/dtos';
+import { chain } from '@/dtos';
 import {
   Box,
   Dialog,
@@ -8,12 +8,17 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
-import React, { useState } from 'react';
+import React from 'react';
 import { Item } from '../item';
 import L1Pic from '@/assets/chainAssets';
 
+export interface selectItem {
+  item: Array<chain>;
+  setItem: React.Dispatch<React.SetStateAction<Array<chain>>>;
+}
 
-interface ModalProps extends DialogProps {
+type composition = DialogProps & selectItem;
+interface ModalProps extends composition {
   handleClose: React.Dispatch<React.SetStateAction<boolean>>;
   title: string;
   placeholder: string;
@@ -26,9 +31,9 @@ export const Modal: React.FC<ModalProps> = ({
   title,
   placeholder,
   setActiveChain,
+  item,
+  setItem,
 }) => {
-  const [item, setItem] = useState(Object.keys(chainL1));
-
   const handleFilter = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -40,7 +45,7 @@ export const Modal: React.FC<ModalProps> = ({
 
     setItem(arr);
     if (!e.target.value) {
-      setItem(Object.keys(chainL1));
+      setItem(item);
     }
   };
   return (
@@ -80,7 +85,7 @@ export const Modal: React.FC<ModalProps> = ({
               label={chain}
               key={index}
               handleSwitchChain={setActiveChain}
-              source={L1Pic[chain as chainL1Index]}
+              source={L1Pic[chain]}
             />
           ))}
         </Box>

@@ -10,7 +10,7 @@ import {
 } from '@thirdweb-dev/react';
 import { ScrollSepoliaTestnet, Sepolia } from '@thirdweb-dev/chains';
 import { useState } from 'react';
-import { ChainContext } from './context';
+import { ChainContext } from '../context';
 import { chain } from '@/dtos';
 const ScrollSepolia = {
   ...ScrollSepoliaTestnet,
