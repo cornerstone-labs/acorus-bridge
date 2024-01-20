@@ -50,6 +50,6 @@ input::-webkit-inner-spin-button {
 }
 
 .MuiPaper-root {
-  background: rgb(19, 19, 21);
+  background: rgb(19, 19, 21) !important;
   border-radius: 8px;
 }

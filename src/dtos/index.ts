@@ -4,6 +4,7 @@ export enum chainL1 {
 
 export enum chainL2 {
   'ScrollSepolia' = '0x1AaAB19C81e25242BaC1E6da13934B5b00Dff4Cc',
+  'ScrollSepolia11' = '0x1AaAB19C81e25242BaC1E6da13934B5b00Dff4Cc111',
 }
 
 export type chainL1Index = keyof typeof chainL1;

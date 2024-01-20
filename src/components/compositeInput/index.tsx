@@ -6,21 +6,26 @@ import {
   useBalance,
   useConnectionStatus,
 } from '@thirdweb-dev/react';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Modal, selectItem } from '@/components/dialog';
 import Image from 'next/image';
 import { validate } from '@/utils';
+import { chain } from '@/dtos';
 
 interface CompositeInputProps extends selectItem {
   direction?: 'From' | 'To';
   handleValue: React.Dispatch<React.SetStateAction<string>>;
   selectedIndex: number;
+  setTargetChain?: React.Dispatch<React.SetStateAction<chain | undefined>>;
+  targetChain?: chain;
 }
 export const CompositeInput: React.FC<CompositeInputProps> = ({
   handleValue,
   setItem,
   item,
+  setTargetChain,
   selectedIndex,
+  targetChain,
   direction = 'From',
 }) => {
   const status = useConnectionStatus();
@@ -28,6 +33,14 @@ export const CompositeInput: React.FC<CompositeInputProps> = ({
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const { data: balance, isLoading: loadingBalance } =
     useBalance(NATIVE_TOKEN_ADDRESS);
+  const list = useMemo(() => {
+    if (direction === 'From') return item;
+    return item.filter((v) => v !== activeChain);
+  }, [activeChain, direction, item]);
+
+  useEffect(() => {
+    setTargetChain?.(list[0]);
+  }, [list, setTargetChain]);
   return (
     <Box>
       <Stack flexDirection={'row'} mt={2} alignItems={'center'} gap={0.5}>
@@ -35,7 +48,7 @@ export const CompositeInput: React.FC<CompositeInputProps> = ({
           {direction}
         </Typography>
         <Button color="secondary" onClick={() => setModalOpen(true)}>
-          {direction === 'From' ? activeChain : ''}
+          {direction === 'From' ? activeChain : targetChain}
         </Button>
         <Typography />
       </Stack>
@@ -105,9 +118,10 @@ export const CompositeInput: React.FC<CompositeInputProps> = ({
         title={'Choose Chain'}
         placeholder="select chain by name"
         setActiveChain={setActiveChain}
-        item={item}
+        item={list}
         setItem={setItem}
         selectedIndex={selectedIndex}
+        setTargetChain={setTargetChain}
       />
     </Box>
   );

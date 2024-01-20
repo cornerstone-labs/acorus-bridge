@@ -42,8 +42,9 @@ export default function Home(this: any) {
     contract,
     'WithdrawETHtoOfficialBridge'
   );
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [item, setItem] = useState<chain[]>(Object.keys(chainL1) as chain[]);
+  const [targetChain, setTargetChain] = useState<chain>();
   const handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -126,11 +127,13 @@ export default function Home(this: any) {
       />
       {selectedIndex === 1 && (
         <CompositeInput
+          setTargetChain={setTargetChain}
           direction={'To'}
           handleValue={setValue}
           item={item}
           setItem={setItem}
           selectedIndex={selectedIndex}
+          targetChain={targetChain}
         />
       )}
       <Stack alignItems={'center'} mt={4}>

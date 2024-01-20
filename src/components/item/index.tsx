@@ -1,25 +1,23 @@
-import { assignChain } from '@/app/layout';
 import { chain } from '@/dtos';
 import { Button, Typography } from '@mui/material';
-import { useSwitchChain } from '@thirdweb-dev/react';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import Image from 'next/image';
 interface ItemProps {
-  label: string;
+  label: chain;
   handleSwitchChain: React.Dispatch<React.SetStateAction<chain>>;
   source?: StaticImport | string;
   handleClose: React.Dispatch<React.SetStateAction<boolean>>;
   direction: 'From' | 'To';
+  setTargetChain?: React.Dispatch<React.SetStateAction<chain | undefined>>;
 }
 export const Item: React.FC<ItemProps> = ({
   direction,
   label,
   handleSwitchChain,
+  setTargetChain,
   handleClose,
   source = '',
 }) => {
-  const switchChain = useSwitchChain();
-
   return (
     <Button
       sx={{
@@ -34,9 +32,9 @@ export const Item: React.FC<ItemProps> = ({
       }}
       onClick={() => {
         if (direction === 'From') {
-          handleSwitchChain(label as chain);
-          switchChain(assignChain[label as keyof typeof assignChain].chainId);
+          handleSwitchChain(label);
         }
+        setTargetChain?.(label);
         handleClose(false);
       }}
     >

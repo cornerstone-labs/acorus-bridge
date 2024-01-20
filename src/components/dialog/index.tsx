@@ -1,4 +1,4 @@
-import { chain, chainL1, chainL1Index, chainL2 } from '@/dtos';
+import { chain, chainL1, chainL2 } from '@/dtos';
 import {
   Box,
   Dialog,
@@ -8,9 +8,9 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React from 'react';
 import { Item } from '../item';
-import L1Pic from '@/assets/chainAssets';
+import chainPicture from '@/assets/chainAssets';
 
 export interface selectItem {
   item: Array<chain>;
@@ -25,6 +25,7 @@ interface ModalProps extends composition {
   setActiveChain: React.Dispatch<React.SetStateAction<chain>>;
   selectedIndex: number;
   direction: 'From' | 'To';
+  setTargetChain?: React.Dispatch<React.SetStateAction<chain | undefined>>;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -37,6 +38,7 @@ export const Modal: React.FC<ModalProps> = ({
   item,
   setItem,
   direction,
+  setTargetChain,
 }) => {
   const handleFilter = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -88,14 +90,15 @@ export const Modal: React.FC<ModalProps> = ({
           justifyContent={'center'}
           flexWrap={'wrap'}
         >
-          {item.map((chain, index) => (
+          {item?.map((chain, index) => (
             <Item
+              setTargetChain={setTargetChain}
               direction={direction}
               handleClose={handleClose}
               label={chain}
               key={index}
               handleSwitchChain={setActiveChain}
-              source={L1Pic[chain]}
+              source={chainPicture[chain]}
             />
           ))}
         </Box>

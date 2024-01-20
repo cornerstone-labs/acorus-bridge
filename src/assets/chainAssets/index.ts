@@ -2,8 +2,9 @@ import { StaticImageData } from 'next/image';
 import Sepolia from './sepolia.png';
 import { chain } from '@/dtos';
 
-const L1Pic: Record<chain, StaticImageData> = {
+const chainPicture: Record<chain, StaticImageData> = {
   Sepolia,
   ScrollSepolia: Sepolia,
+  ScrollSepolia11: Sepolia,
 };
-export default L1Pic;
+export default chainPicture;
