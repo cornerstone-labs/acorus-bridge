@@ -1,4 +1,4 @@
-import { chain } from '@/dtos';
+import { chain, chainL1, chainL1Index, chainL2 } from '@/dtos';
 import {
   Box,
   Dialog,
@@ -8,7 +8,7 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
-import React from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Item } from '../item';
 import L1Pic from '@/assets/chainAssets';
 
@@ -23,9 +23,12 @@ interface ModalProps extends composition {
   title: string;
   placeholder: string;
   setActiveChain: React.Dispatch<React.SetStateAction<chain>>;
+  selectedIndex: number;
+  direction: 'From' | 'To';
 }
 
 export const Modal: React.FC<ModalProps> = ({
+  selectedIndex,
   open,
   handleClose,
   title,
@@ -33,6 +36,7 @@ export const Modal: React.FC<ModalProps> = ({
   setActiveChain,
   item,
   setItem,
+  direction,
 }) => {
   const handleFilter = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -45,7 +49,12 @@ export const Modal: React.FC<ModalProps> = ({
 
     setItem(arr);
     if (!e.target.value) {
-      setItem(item);
+      if (selectedIndex === 0) {
+        setItem(Object.keys(chainL1) as chain[]);
+
+        return;
+      }
+      setItem(Object.keys(chainL2) as chain[]);
     }
   };
   return (
@@ -81,6 +90,7 @@ export const Modal: React.FC<ModalProps> = ({
         >
           {item.map((chain, index) => (
             <Item
+              direction={direction}
               handleClose={handleClose}
               label={chain}
               key={index}

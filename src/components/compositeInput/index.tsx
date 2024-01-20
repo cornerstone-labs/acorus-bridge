@@ -12,21 +12,22 @@ import Image from 'next/image';
 import { validate } from '@/utils';
 
 interface CompositeInputProps extends selectItem {
-  direction?: string;
+  direction?: 'From' | 'To';
   handleValue: React.Dispatch<React.SetStateAction<string>>;
+  selectedIndex: number;
 }
 export const CompositeInput: React.FC<CompositeInputProps> = ({
   handleValue,
-  direction = 'From',
   setItem,
   item,
+  selectedIndex,
+  direction = 'From',
 }) => {
   const status = useConnectionStatus();
   const { activeChain, setActiveChain } = useContext(ChainContext)!;
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const { data: balance, isLoading: loadingBalance } =
     useBalance(NATIVE_TOKEN_ADDRESS);
-
   return (
     <Box>
       <Stack flexDirection={'row'} mt={2} alignItems={'center'} gap={0.5}>
@@ -98,6 +99,7 @@ export const CompositeInput: React.FC<CompositeInputProps> = ({
         </Stack>
       </Box>
       <Modal
+        direction={direction}
         open={modalOpen}
         handleClose={setModalOpen}
         title={'Choose Chain'}
@@ -105,6 +107,7 @@ export const CompositeInput: React.FC<CompositeInputProps> = ({
         setActiveChain={setActiveChain}
         item={item}
         setItem={setItem}
+        selectedIndex={selectedIndex}
       />
     </Box>
   );

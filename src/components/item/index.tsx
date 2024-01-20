@@ -9,8 +9,10 @@ interface ItemProps {
   handleSwitchChain: React.Dispatch<React.SetStateAction<chain>>;
   source?: StaticImport | string;
   handleClose: React.Dispatch<React.SetStateAction<boolean>>;
+  direction: 'From' | 'To';
 }
 export const Item: React.FC<ItemProps> = ({
+  direction,
   label,
   handleSwitchChain,
   handleClose,
@@ -31,8 +33,10 @@ export const Item: React.FC<ItemProps> = ({
         color: '#fff',
       }}
       onClick={() => {
-        handleSwitchChain(label as chain);
-        switchChain(assignChain[label as keyof typeof assignChain].chainId);
+        if (direction === 'From') {
+          handleSwitchChain(label as chain);
+          switchChain(assignChain[label as keyof typeof assignChain].chainId);
+        }
         handleClose(false);
       }}
     >

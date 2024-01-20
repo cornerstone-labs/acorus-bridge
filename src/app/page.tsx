@@ -118,13 +118,19 @@ export default function Home(this: any) {
         </Menu>
       </Box>
 
-      <CompositeInput handleValue={setValue} item={item} setItem={setItem} />
+      <CompositeInput
+        handleValue={setValue}
+        item={item}
+        setItem={setItem}
+        selectedIndex={selectedIndex}
+      />
       {selectedIndex === 1 && (
         <CompositeInput
           direction={'To'}
           handleValue={setValue}
           item={item}
           setItem={setItem}
+          selectedIndex={selectedIndex}
         />
       )}
       <Stack alignItems={'center'} mt={4}>
