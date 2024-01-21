@@ -13,6 +13,7 @@ import {
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 import Image from 'next/image';
+
 import { useContext, useState } from 'react';
 import {
   ConnectWallet,
@@ -25,7 +26,7 @@ import {
 import { NATIVE_TOKEN_ADDRESS } from '@thirdweb-dev/sdk';
 import React from 'react';
 import { ChainContext } from '@/context';
-import { chain, chainL1, chainL1Index, chainL2, chainL2Index } from '@/dtos';
+import { Chain, ChainL1, ChainL1Index, ChainL2, ChainL2Index } from '@/dtos';
 import { CompositeInput } from '@/components/compositeInput';
 const options = ['Staking', 'Transfer'];
 export default function Home(this: any) {
@@ -35,16 +36,16 @@ export default function Home(this: any) {
 
   const result = parseFloat(value) > parseFloat(balance?.displayValue!);
   const { activeChain, setActiveChain } = useContext(ChainContext)!;
-
-  const { contract } = useContract(chainL1[activeChain as chainL1Index]);
+  const [token, setToken] = useState<string>('ETH');
+  const { contract } = useContract({ ...ChainL1, ...ChainL2 }[activeChain]);
   const address = useAddress();
   const { mutateAsync: WithdrawETHtoOfficialBridge } = useContractWrite(
     contract,
     'WithdrawETHtoOfficialBridge'
   );
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [item, setItem] = useState<chain[]>(Object.keys(chainL1) as chain[]);
-  const [targetChain, setTargetChain] = useState<chain>();
+  const [item, setItem] = useState<Chain[]>(Object.keys(ChainL1) as Chain[]);
+  const [targetChain, setTargetChain] = useState<Chain>();
   const handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -57,11 +58,11 @@ export default function Home(this: any) {
   ) => {
     setSelectedIndex(index);
     if (index === 1) {
-      setActiveChain(Object.keys(chainL2)[0] as chainL2Index);
-      setItem(Object.keys(chainL2) as chain[]);
+      setActiveChain(Object.keys(ChainL2)[0] as ChainL2Index);
+      setItem(Object.keys(ChainL2) as Chain[]);
     } else {
-      setActiveChain(Object.keys(chainL1)[0] as chainL1Index);
-      setItem(Object.keys(chainL1) as chain[]);
+      setActiveChain(Object.keys(ChainL1)[0] as ChainL1Index);
+      setItem(Object.keys(ChainL1) as Chain[]);
     }
     setAnchorEl(null);
   };
@@ -120,6 +121,8 @@ export default function Home(this: any) {
       </Box>
 
       <CompositeInput
+        token={token}
+        setToken={setToken}
         handleValue={setValue}
         item={item}
         setItem={setItem}
@@ -127,6 +130,8 @@ export default function Home(this: any) {
       />
       {selectedIndex === 1 && (
         <CompositeInput
+          token={token}
+          setToken={setToken}
           setTargetChain={setTargetChain}
           direction={'To'}
           handleValue={setValue}
@@ -147,7 +152,7 @@ export default function Home(this: any) {
           action={() => {
             WithdrawETHtoOfficialBridge({ args: [address] });
           }}
-          contractAddress={chainL1[activeChain as chainL1Index]}
+          contractAddress={ChainL1[activeChain as ChainL1Index]}
         >
           Continue
         </Web3Button>

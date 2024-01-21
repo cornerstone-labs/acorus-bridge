@@ -11,7 +11,7 @@ import {
 import { ScrollSepoliaTestnet, Sepolia } from '@thirdweb-dev/chains';
 import { useState } from 'react';
 import { ChainContext } from '../context';
-import { chain } from '@/dtos';
+import { Chain } from '@/dtos';
 const ScrollSepolia = {
   ...ScrollSepoliaTestnet,
   rpc: [
@@ -26,7 +26,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [activeChain, setActiveChain] = useState<chain>('Sepolia');
+  const [activeChain, setActiveChain] = useState<Chain>('Sepolia');
 
   return (
     <html lang="en">

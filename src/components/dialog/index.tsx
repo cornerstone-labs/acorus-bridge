@@ -1,4 +1,4 @@
-import { chain, chainL1, chainL2 } from '@/dtos';
+import { Chain, ChainL1, ChainL2, TokenName, tokenObj } from '@/dtos';
 import {
   Box,
   Dialog,
@@ -8,55 +8,72 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Item } from '../item';
 import chainPicture from '@/assets/chainAssets';
 
 export interface selectItem {
-  item: Array<chain>;
-  setItem: React.Dispatch<React.SetStateAction<Array<chain>>>;
+  item: Array<Chain>;
+  setItem: React.Dispatch<React.SetStateAction<Array<Chain>>>;
+  setToken: React.Dispatch<React.SetStateAction<string>>;
 }
 
 type composition = DialogProps & selectItem;
 interface ModalProps extends composition {
+  tokenListRef: React.MutableRefObject<string[]>;
+  setTokenList: React.Dispatch<React.SetStateAction<string[]>>;
+  tokenList: TokenName[];
   handleClose: React.Dispatch<React.SetStateAction<boolean>>;
   title: string;
   placeholder: string;
-  setActiveChain: React.Dispatch<React.SetStateAction<chain>>;
-  selectedIndex: number;
+  setActiveChain: React.Dispatch<React.SetStateAction<Chain>>;
+  selectedIndex?: number;
   direction: 'From' | 'To';
-  setTargetChain?: React.Dispatch<React.SetStateAction<chain | undefined>>;
+  setTargetChain?: React.Dispatch<React.SetStateAction<Chain | undefined>>;
 }
 
 export const Modal: React.FC<ModalProps> = ({
+  setToken,
+  tokenListRef,
+  setTokenList,
+  tokenList,
   selectedIndex,
   open,
   handleClose,
   title,
   placeholder,
   setActiveChain,
-  item,
+  item: chainList,
   setItem,
   direction,
   setTargetChain,
 }) => {
+  const items: string[] | Chain[] = useMemo(() => {
+    if (tokenListRef.current.length !== 0) return tokenList;
+    return chainList;
+  }, [chainList, tokenList, tokenListRef]);
   const handleFilter = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     e.preventDefault();
 
-    const arr = item.filter((v) => {
+    const arr = items.filter((v) => {
       return v.toLocaleLowerCase().includes(e.target.value.toLocaleLowerCase());
     });
 
-    setItem(arr);
+    tokenListRef.current.length === 0
+      ? setItem(arr as Chain[])
+      : setTokenList(arr);
     if (!e.target.value) {
-      if (selectedIndex === 0) {
-        setItem(Object.keys(chainL1) as chain[]);
-
+      if (tokenListRef.current.length === 0 && selectedIndex === 0) {
+        setItem(Object.keys(ChainL1) as Chain[]);
         return;
       }
-      setItem(Object.keys(chainL2) as chain[]);
+      if (tokenListRef.current.length === 0 && selectedIndex === 1) {
+        setItem(Object.keys(ChainL2) as Chain[]);
+        return;
+      }
+      setTokenList(tokenListRef.current);
     }
   };
   return (
@@ -90,15 +107,17 @@ export const Modal: React.FC<ModalProps> = ({
           justifyContent={'center'}
           flexWrap={'wrap'}
         >
-          {item?.map((chain, index) => (
+          {items?.map((item, index) => (
             <Item
+              tokenList={tokenList}
+              setToken={setToken}
               setTargetChain={setTargetChain}
               direction={direction}
               handleClose={handleClose}
-              label={chain}
+              label={item}
               key={index}
               handleSwitchChain={setActiveChain}
-              source={chainPicture[chain]}
+              source={''}
             />
           ))}
         </Box>

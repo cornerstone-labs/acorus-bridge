@@ -6,20 +6,24 @@ import {
   useBalance,
   useConnectionStatus,
 } from '@thirdweb-dev/react';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Modal, selectItem } from '@/components/dialog';
 import Image from 'next/image';
 import { validate } from '@/utils';
-import { chain } from '@/dtos';
+import { Chain, TokenName, tokenObj } from '@/dtos';
 
 interface CompositeInputProps extends selectItem {
   direction?: 'From' | 'To';
   handleValue: React.Dispatch<React.SetStateAction<string>>;
   selectedIndex: number;
-  setTargetChain?: React.Dispatch<React.SetStateAction<chain | undefined>>;
-  targetChain?: chain;
+  token: string;
+  setToken: React.Dispatch<React.SetStateAction<string>>;
+  setTargetChain?: React.Dispatch<React.SetStateAction<Chain | undefined>>;
+  targetChain?: Chain;
 }
 export const CompositeInput: React.FC<CompositeInputProps> = ({
+  token,
+  setToken,
   handleValue,
   setItem,
   item,
@@ -29,8 +33,11 @@ export const CompositeInput: React.FC<CompositeInputProps> = ({
   direction = 'From',
 }) => {
   const status = useConnectionStatus();
+  const tokenListRef = useRef<TokenName[]>([]);
   const { activeChain, setActiveChain } = useContext(ChainContext)!;
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [title, setTitle] = useState<string>('');
+  const [tokenList, setTokenList] = useState<TokenName[]>([]);
   const { data: balance, isLoading: loadingBalance } =
     useBalance(NATIVE_TOKEN_ADDRESS);
   const list = useMemo(() => {
@@ -47,7 +54,15 @@ export const CompositeInput: React.FC<CompositeInputProps> = ({
         <Typography fontSize={14} color={'#cbcbcb'} minWidth={35}>
           {direction}
         </Typography>
-        <Button color="secondary" onClick={() => setModalOpen(true)}>
+        <Button
+          color="secondary"
+          onClick={() => {
+            tokenListRef.current = [];
+            setTokenList([]);
+            setTitle('please choose Chain');
+            setModalOpen(true);
+          }}
+        >
           {direction === 'From' ? activeChain : targetChain}
         </Button>
         <Typography />
@@ -86,8 +101,31 @@ export const CompositeInput: React.FC<CompositeInputProps> = ({
             justifyContent={'center'}
             alignItems={'center'}
           >
-            <Image src={eth} alt="ETH" width={24} height={24} />
-            <Button sx={{ fontSize: 18 }}>{'ETH'}</Button>
+            <Image src={eth} alt="img" width={24} height={24} />
+            <Button
+              sx={{ fontSize: 18 }}
+              onClick={() => {
+                setTitle('please choose token');
+                if (targetChain) {
+                  const arr = tokenObj[targetChain].map(
+                    (token) => token.tokenName
+                  );
+                  setTokenList(arr);
+                  tokenListRef.current = arr;
+                } else {
+                  const arr = tokenObj[activeChain].map(
+                    (token) => token.tokenName
+                  );
+
+                  setTokenList(arr);
+                  tokenListRef.current = arr;
+                }
+
+                setModalOpen(true);
+              }}
+            >
+              {token}
+            </Button>
           </Stack>
         </Stack>
         <Stack pt={1} flexDirection={'row'} color={'#3d424d'}>
@@ -112,11 +150,15 @@ export const CompositeInput: React.FC<CompositeInputProps> = ({
         </Stack>
       </Box>
       <Modal
+        setToken={setToken}
+        tokenListRef={tokenListRef}
+        setTokenList={setTokenList}
+        tokenList={tokenList}
         direction={direction}
         open={modalOpen}
         handleClose={setModalOpen}
-        title={'Choose Chain'}
-        placeholder="select chain by name"
+        title={title}
+        placeholder="select item by its name"
         setActiveChain={setActiveChain}
         item={list}
         setItem={setItem}

@@ -1,22 +1,26 @@
-import { chain } from '@/dtos';
+import { Chain, TokenName } from '@/dtos';
 import { Button, Typography } from '@mui/material';
 import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import Image from 'next/image';
 interface ItemProps {
-  label: chain;
-  handleSwitchChain: React.Dispatch<React.SetStateAction<chain>>;
-  source?: StaticImport | string;
+  tokenList: TokenName[];
+  label: Chain | TokenName;
+  handleSwitchChain: React.Dispatch<React.SetStateAction<Chain>>;
+  source: StaticImport | string;
   handleClose: React.Dispatch<React.SetStateAction<boolean>>;
   direction: 'From' | 'To';
-  setTargetChain?: React.Dispatch<React.SetStateAction<chain | undefined>>;
+  setTargetChain?: React.Dispatch<React.SetStateAction<Chain | undefined>>;
+  setToken: React.Dispatch<React.SetStateAction<string>>;
 }
 export const Item: React.FC<ItemProps> = ({
+  tokenList,
+  setToken,
   direction,
   label,
   handleSwitchChain,
   setTargetChain,
   handleClose,
-  source = '',
+  source,
 }) => {
   return (
     <Button
@@ -31,10 +35,14 @@ export const Item: React.FC<ItemProps> = ({
         color: '#fff',
       }}
       onClick={() => {
-        if (direction === 'From') {
-          handleSwitchChain(label);
+        if (tokenList.length !== 0) {
+          setToken(label);
+          return;
         }
-        setTargetChain?.(label);
+        if (direction === 'From') {
+          handleSwitchChain(label as Chain);
+        }
+        setTargetChain?.(label as Chain);
         handleClose(false);
       }}
     >

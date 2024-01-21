@@ -1,9 +1,7 @@
-import { chain } from '@/dtos';
+import { Chain } from '@/dtos';
 import { Dispatch, SetStateAction, createContext } from 'react';
 
-
-
 export const ChainContext = createContext<{
-  setActiveChain: Dispatch<SetStateAction<chain>>;
-  activeChain: chain;
+  setActiveChain: Dispatch<SetStateAction<Chain>>;
+  activeChain: Chain;
 } | null>(null);
