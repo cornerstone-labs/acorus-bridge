@@ -14,7 +14,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 import Image from 'next/image';
 
-import { useContext, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import {
   ConnectWallet,
   Web3Button,
@@ -33,7 +33,6 @@ export default function Home(this: any) {
   const { data: balance } = useBalance(NATIVE_TOKEN_ADDRESS);
   const [value, setValue] = useState('');
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
   const result = parseFloat(value) > parseFloat(balance?.displayValue!);
   const { activeChain, setActiveChain } = useContext(ChainContext)!;
   const [token, setToken] = useState<string>('ETH');

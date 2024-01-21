@@ -1,4 +1,4 @@
-import { Chain, ChainL1, ChainL2, TokenName, tokenObj } from '@/dtos';
+import { Chain, TokenName } from '@/dtos';
 import {
   Box,
   Dialog,
@@ -8,9 +8,8 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Item } from '../item';
-import chainPicture from '@/assets/chainAssets';
 
 export interface selectItem {
   item: Array<Chain>;
@@ -30,6 +29,7 @@ interface ModalProps extends composition {
   selectedIndex?: number;
   direction: 'From' | 'To';
   setTargetChain?: React.Dispatch<React.SetStateAction<Chain | undefined>>;
+  chainListRef: React.MutableRefObject<Chain[]>;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -37,7 +37,6 @@ export const Modal: React.FC<ModalProps> = ({
   tokenListRef,
   setTokenList,
   tokenList,
-  selectedIndex,
   open,
   handleClose,
   title,
@@ -47,34 +46,30 @@ export const Modal: React.FC<ModalProps> = ({
   setItem,
   direction,
   setTargetChain,
+  chainListRef,
 }) => {
   const items: string[] | Chain[] = useMemo(() => {
     if (tokenListRef.current.length !== 0) return tokenList;
     return chainList;
   }, [chainList, tokenList, tokenListRef]);
+
   const handleFilter = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     e.preventDefault();
 
-    const arr = items.filter((v) => {
+    const pendingData =
+      tokenListRef.current.length !== 0
+        ? tokenListRef.current
+        : chainListRef.current;
+    const arr = pendingData?.filter((v) => {
       return v.toLocaleLowerCase().includes(e.target.value.toLocaleLowerCase());
     });
 
+    console.log(arr);
     tokenListRef.current.length === 0
       ? setItem(arr as Chain[])
       : setTokenList(arr);
-    if (!e.target.value) {
-      if (tokenListRef.current.length === 0 && selectedIndex === 0) {
-        setItem(Object.keys(ChainL1) as Chain[]);
-        return;
-      }
-      if (tokenListRef.current.length === 0 && selectedIndex === 1) {
-        setItem(Object.keys(ChainL2) as Chain[]);
-        return;
-      }
-      setTokenList(tokenListRef.current);
-    }
   };
   return (
     <Dialog

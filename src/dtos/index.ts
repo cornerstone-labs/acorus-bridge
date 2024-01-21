@@ -19,8 +19,14 @@ export const tokenObj: Record<
     { tokenName: 'eth', tokenAddress: '0xeeeee' },
     { tokenName: 'usdt', tokenAddress: '' },
   ],
-  ScrollSepolia: [],
-  ScrollSepolia11: [],
+  ScrollSepolia: [
+    { tokenName: 'FTX', tokenAddress: '0xeeeee' },
+    { tokenName: 'USDC', tokenAddress: '' },
+  ],
+  ScrollSepolia11: [
+    { tokenName: '1qq', tokenAddress: '0xeeeee' },
+    { tokenName: 'cc', tokenAddress: '' },
+  ],
 };
 
 export type token = string;

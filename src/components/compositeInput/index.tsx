@@ -41,13 +41,22 @@ export const CompositeInput: React.FC<CompositeInputProps> = ({
   const { data: balance, isLoading: loadingBalance } =
     useBalance(NATIVE_TOKEN_ADDRESS);
   const list = useMemo(() => {
-    if (direction === 'From') return item;
+    if (direction === 'From') {
+      return item;
+    }
     return item.filter((v) => v !== activeChain);
   }, [activeChain, direction, item]);
+  const chainListRef = useRef<Chain[]>(list);
 
   useEffect(() => {
-    setTargetChain?.(list[0]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    chainListRef.current = list;
+  }, [selectedIndex, activeChain]);
+  useEffect(() => {
+    console.log('here');
+    setTargetChain?.(chainListRef.current[0]);
   }, [list, setTargetChain]);
+
   return (
     <Box>
       <Stack flexDirection={'row'} mt={2} alignItems={'center'} gap={0.5}>
@@ -58,8 +67,10 @@ export const CompositeInput: React.FC<CompositeInputProps> = ({
           color="secondary"
           onClick={() => {
             tokenListRef.current = [];
+            setItem(chainListRef.current);
+
             setTokenList([]);
-            setTitle('please choose Chain');
+            setTitle('please choose chain');
             setModalOpen(true);
           }}
         >
@@ -150,6 +161,7 @@ export const CompositeInput: React.FC<CompositeInputProps> = ({
         </Stack>
       </Box>
       <Modal
+        chainListRef={chainListRef}
         setToken={setToken}
         tokenListRef={tokenListRef}
         setTokenList={setTokenList}
