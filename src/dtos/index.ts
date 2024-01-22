@@ -4,30 +4,35 @@ export enum ChainL1 {
 
 export enum ChainL2 {
   'ScrollSepolia' = '0x1AaAB19C81e25242BaC1E6da13934B5b00Dff4Cc',
-  'ScrollSepolia11' = '0x1AaAB19C81e25242BaC1E6da13934B5b00Dff4Cc111',
 }
 
 export type ChainL1Index = keyof typeof ChainL1;
 export type ChainL2Index = keyof typeof ChainL2;
 export type Chain = ChainL1Index | ChainL2Index;
 
-export const tokenObj: Record<
-  Chain,
-  Array<{ tokenName: string; tokenAddress: string }>
-> = {
+export const tokenObj = {
   Sepolia: [
-    { tokenName: 'eth', tokenAddress: '0xeeeee' },
-    { tokenName: 'usdt', tokenAddress: '' },
+    { tokenName: 'ETH', tokenAddress: '0xeeeee' },
+    { tokenName: 'WETH', tokenAddress: '' },
+    { tokenName: 'USDT', tokenAddress: '' },
+    { tokenName: 'USDC', tokenAddress: '' },
+    { tokenName: 'DAI', tokenAddress: '' },
   ],
   ScrollSepolia: [
-    { tokenName: 'FTX', tokenAddress: '0xeeeee' },
+    { tokenName: 'ETH', tokenAddress: '0xeeeee' },
+    { tokenName: 'WETH', tokenAddress: '' },
+    { tokenName: 'USDT', tokenAddress: '' },
     { tokenName: 'USDC', tokenAddress: '' },
+    { tokenName: 'DAI', tokenAddress: '' },
   ],
   ScrollSepolia11: [
-    { tokenName: '1qq', tokenAddress: '0xeeeee' },
-    { tokenName: 'cc', tokenAddress: '' },
+    { tokenName: 'ETH', tokenAddress: '0xeeeee' },
+    { tokenName: 'WETH', tokenAddress: '' },
+    { tokenName: 'USDT', tokenAddress: '' },
+    { tokenName: 'USDC', tokenAddress: '' },
+    { tokenName: 'DAI', tokenAddress: '' },
   ],
-};
+} as const;
 
 export type token = string;
 

@@ -8,8 +8,10 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 import { Item } from '../item';
+import picture from '@/assets';
+import { Label } from '@mui/icons-material';
 
 export interface selectItem {
   item: Array<Chain>;
@@ -112,7 +114,7 @@ export const Modal: React.FC<ModalProps> = ({
               label={item}
               key={index}
               handleSwitchChain={setActiveChain}
-              source={''}
+              source={picture[item]}
             />
           ))}
         </Box>

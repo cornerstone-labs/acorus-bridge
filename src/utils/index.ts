@@ -35,5 +35,5 @@ export function validate(event: React.FormEvent<HTMLInputElement>) {
     newValue += '0'.repeat(zeroCount);
   }
 
-  event.currentTarget.value = newValue;
+  return newValue;
 }

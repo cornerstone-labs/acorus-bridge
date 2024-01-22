@@ -1,4 +1,3 @@
-import { eth } from '@/assets/coinAssets';
 import { ChainContext } from '@/context';
 import { Stack, Typography, Button, Skeleton, Box } from '@mui/material';
 import {
@@ -11,6 +10,7 @@ import { Modal, selectItem } from '@/components/dialog';
 import Image from 'next/image';
 import { validate } from '@/utils';
 import { Chain, TokenName, tokenObj } from '@/dtos';
+import picture from '@/assets';
 
 interface CompositeInputProps extends selectItem {
   direction?: 'From' | 'To';
@@ -20,8 +20,10 @@ interface CompositeInputProps extends selectItem {
   setToken: React.Dispatch<React.SetStateAction<string>>;
   setTargetChain?: React.Dispatch<React.SetStateAction<Chain | undefined>>;
   targetChain?: Chain;
+  value: string;
 }
 export const CompositeInput: React.FC<CompositeInputProps> = ({
+  value,
   token,
   setToken,
   handleValue,
@@ -47,15 +49,15 @@ export const CompositeInput: React.FC<CompositeInputProps> = ({
     return item.filter((v) => v !== activeChain);
   }, [activeChain, direction, item]);
   const chainListRef = useRef<Chain[]>(list);
-
+  const isTyping = useRef(false);
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     chainListRef.current = list;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIndex, activeChain]);
   useEffect(() => {
     console.log('here');
     setTargetChain?.(chainListRef.current[0]);
-  }, [list, setTargetChain]);
+  }, [activeChain, setTargetChain]);
 
   return (
     <Box>
@@ -93,6 +95,16 @@ export const CompositeInput: React.FC<CompositeInputProps> = ({
           alignItems={'center'}
         >
           <Box
+            onCompositionStart={() => {
+              console.log(20);
+
+              isTyping.current = true;
+            }}
+            onCompositionEnd={() => {
+              console.log(2);
+              isTyping.current = false;
+            }}
+            value={value}
             inputMode={'numeric'}
             width={'200px'}
             type="text"
@@ -103,8 +115,11 @@ export const CompositeInput: React.FC<CompositeInputProps> = ({
             placeholder="0.0"
             pattern={'[0-9]*'}
             onInput={(e) => {
-              validate(e);
-              handleValue(e.currentTarget.value);
+              const value = validate(e);
+              handleValue(value);
+
+              // if (!isTyping.current) {
+              // }
             }}
           />
           <Stack
@@ -112,7 +127,7 @@ export const CompositeInput: React.FC<CompositeInputProps> = ({
             justifyContent={'center'}
             alignItems={'center'}
           >
-            <Image src={eth} alt="img" width={24} height={24} />
+            <Image src={picture[token]} alt="img" width={24} height={24} />
             <Button
               sx={{ fontSize: 18 }}
               onClick={() => {

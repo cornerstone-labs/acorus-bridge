@@ -37,16 +37,24 @@ export const Item: React.FC<ItemProps> = ({
       onClick={() => {
         if (tokenList.length !== 0) {
           setToken(label);
+          handleClose(false);
           return;
         }
         if (direction === 'From') {
           handleSwitchChain(label as Chain);
+        } else {
+          setTargetChain?.(label as Chain);
         }
-        setTargetChain?.(label as Chain);
         handleClose(false);
       }}
     >
-      <Image alt="img" src={source} width={36} height={36} />
+      <Image
+        alt="img"
+        src={source}
+        width={36}
+        height={36}
+        style={{ backgroundColor: 'transparent' }}
+      />
       <Typography py={2}>{label}</Typography>
     </Button>
   );

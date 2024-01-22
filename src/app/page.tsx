@@ -1,5 +1,4 @@
 'use client';
-import { eth } from '@/assets/coinAssets/index';
 import {
   Box,
   List,
@@ -28,6 +27,7 @@ import React from 'react';
 import { ChainContext } from '@/context';
 import { Chain, ChainL1, ChainL1Index, ChainL2, ChainL2Index } from '@/dtos';
 import { CompositeInput } from '@/components/compositeInput';
+import { computeAddress } from 'ethers/lib/utils';
 const options = ['Staking', 'Transfer'];
 export default function Home(this: any) {
   const { data: balance } = useBalance(NATIVE_TOKEN_ADDRESS);
@@ -36,6 +36,7 @@ export default function Home(this: any) {
   const result = parseFloat(value) > parseFloat(balance?.displayValue!);
   const { activeChain, setActiveChain } = useContext(ChainContext)!;
   const [token, setToken] = useState<string>('ETH');
+  const [tokenTo, setTokenTo] = useState<string>('ETH');
   const { contract } = useContract({ ...ChainL1, ...ChainL2 }[activeChain]);
   const address = useAddress();
   const { mutateAsync: WithdrawETHtoOfficialBridge } = useContractWrite(
@@ -45,6 +46,7 @@ export default function Home(this: any) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [item, setItem] = useState<Chain[]>(Object.keys(ChainL1) as Chain[]);
   const [targetChain, setTargetChain] = useState<Chain>();
+  computeAddress;
   const handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -120,6 +122,7 @@ export default function Home(this: any) {
       </Box>
 
       <CompositeInput
+        value={value}
         token={token}
         setToken={setToken}
         handleValue={setValue}
@@ -129,8 +132,9 @@ export default function Home(this: any) {
       />
       {selectedIndex === 1 && (
         <CompositeInput
-          token={token}
-          setToken={setToken}
+          value={value}
+          token={tokenTo}
+          setToken={setTokenTo}
           setTargetChain={setTargetChain}
           direction={'To'}
           handleValue={setValue}
@@ -181,7 +185,6 @@ export default function Home(this: any) {
             minHeight={40}
           >
             <Box display={'flex'} gap={1} alignItems={'center'}>
-              <Image src={eth} alt="ETH" width={20} height={20} />
               <Typography color={'#cbcbcb'}>ETH</Typography>
             </Box>
             <Typography color={'#cbcbcb'}>130ETH</Typography>
