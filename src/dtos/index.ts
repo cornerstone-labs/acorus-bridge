@@ -34,6 +34,8 @@ export const tokenObj = {
   ],
 } as const;
 
-export type token = string;
+const tokenNames = Object.values(tokenObj).flatMap((objArr) =>
+  objArr.map((obj) => obj.tokenName)
+);
 
-export type TokenName = string;
+export type TokenName = (typeof tokenNames)[number];

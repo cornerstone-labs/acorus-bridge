@@ -10,7 +10,7 @@ interface ItemProps {
   handleClose: React.Dispatch<React.SetStateAction<boolean>>;
   direction: 'From' | 'To';
   setTargetChain?: React.Dispatch<React.SetStateAction<Chain | undefined>>;
-  setToken: React.Dispatch<React.SetStateAction<string>>;
+  setToken: React.Dispatch<React.SetStateAction<TokenName>>;
 }
 export const Item: React.FC<ItemProps> = ({
   tokenList,
@@ -36,7 +36,7 @@ export const Item: React.FC<ItemProps> = ({
       }}
       onClick={() => {
         if (tokenList.length !== 0) {
-          setToken(label);
+          setToken(label as TokenName);
           handleClose(false);
           return;
         }

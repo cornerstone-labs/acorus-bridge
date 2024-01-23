@@ -11,18 +11,17 @@ import {
 import React, { useMemo } from 'react';
 import { Item } from '../item';
 import picture from '@/assets';
-import { Label } from '@mui/icons-material';
 
 export interface selectItem {
   item: Array<Chain>;
   setItem: React.Dispatch<React.SetStateAction<Array<Chain>>>;
-  setToken: React.Dispatch<React.SetStateAction<string>>;
+  setToken: React.Dispatch<React.SetStateAction<TokenName>>;
 }
 
 type composition = DialogProps & selectItem;
 interface ModalProps extends composition {
-  tokenListRef: React.MutableRefObject<string[]>;
-  setTokenList: React.Dispatch<React.SetStateAction<string[]>>;
+  tokenListRef: React.MutableRefObject<TokenName[]>;
+  setTokenList: React.Dispatch<React.SetStateAction<TokenName[]>>;
   tokenList: TokenName[];
   handleClose: React.Dispatch<React.SetStateAction<boolean>>;
   title: string;
@@ -50,7 +49,7 @@ export const Modal: React.FC<ModalProps> = ({
   setTargetChain,
   chainListRef,
 }) => {
-  const items: string[] | Chain[] = useMemo(() => {
+  const items: TokenName[] | Chain[] = useMemo(() => {
     if (tokenListRef.current.length !== 0) return tokenList;
     return chainList;
   }, [chainList, tokenList, tokenListRef]);
@@ -71,7 +70,7 @@ export const Modal: React.FC<ModalProps> = ({
     console.log(arr);
     tokenListRef.current.length === 0
       ? setItem(arr as Chain[])
-      : setTokenList(arr);
+      : setTokenList(arr as TokenName[]);
   };
   return (
     <Dialog

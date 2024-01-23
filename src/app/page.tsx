@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
-import Image from 'next/image';
 
 import { useContext, useRef, useState } from 'react';
 import {
@@ -25,7 +24,14 @@ import {
 import { NATIVE_TOKEN_ADDRESS } from '@thirdweb-dev/sdk';
 import React from 'react';
 import { ChainContext } from '@/context';
-import { Chain, ChainL1, ChainL1Index, ChainL2, ChainL2Index } from '@/dtos';
+import {
+  Chain,
+  ChainL1,
+  ChainL1Index,
+  ChainL2,
+  ChainL2Index,
+  TokenName,
+} from '@/dtos';
 import { CompositeInput } from '@/components/compositeInput';
 import { computeAddress } from 'ethers/lib/utils';
 const options = ['Staking', 'Transfer'];
@@ -35,8 +41,8 @@ export default function Home(this: any) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const result = parseFloat(value) > parseFloat(balance?.displayValue!);
   const { activeChain, setActiveChain } = useContext(ChainContext)!;
-  const [token, setToken] = useState<string>('ETH');
-  const [tokenTo, setTokenTo] = useState<string>('ETH');
+  const [token, setToken] = useState<TokenName>('ETH');
+  const [tokenTo, setTokenTo] = useState<TokenName>('ETH');
   const { contract } = useContract({ ...ChainL1, ...ChainL2 }[activeChain]);
   const address = useAddress();
   const { mutateAsync: WithdrawETHtoOfficialBridge } = useContractWrite(

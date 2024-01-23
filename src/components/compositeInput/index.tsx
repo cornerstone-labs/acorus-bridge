@@ -16,8 +16,8 @@ interface CompositeInputProps extends selectItem {
   direction?: 'From' | 'To';
   handleValue: React.Dispatch<React.SetStateAction<string>>;
   selectedIndex: number;
-  token: string;
-  setToken: React.Dispatch<React.SetStateAction<string>>;
+  token: TokenName;
+  setToken: React.Dispatch<React.SetStateAction<TokenName>>;
   setTargetChain?: React.Dispatch<React.SetStateAction<Chain | undefined>>;
   targetChain?: Chain;
   value: string;
@@ -118,8 +118,8 @@ export const CompositeInput: React.FC<CompositeInputProps> = ({
               const value = validate(e);
               handleValue(value);
 
-              // if (!isTyping.current) {
-              // }
+              if (!isTyping.current) {
+              }
             }}
           />
           <Stack
